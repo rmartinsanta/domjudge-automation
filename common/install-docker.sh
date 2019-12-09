@@ -81,22 +81,23 @@ error "Installing Docker, check that your Linux version is supported"
 
 # Download and install Docker Compose
 echo "--> Downloading docker compose..."
-curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
 error "Downloading Docker Compose"
 chmod +x /usr/bin/docker-compose
 error "Installing Docker Compose"
 
 # Grant permission to use Docker to the given user
-echo "--> Configuring Docker user..."
-echo "Write the username that will be granted permission to use Docker and DOMJudge."
-echo "You may use the current user, or create a new user with 'adduser' in a different terminal before proceeding"
-read -p "Username: " username
-usermod -aG docker $username
-error "Granting privileges to use Docker to $username"
+user=$(whoami)
+echo "--> Granting Docker privileges to user $user..."
+#echo "Write the username that will be granted permission to use Docker and DOMJudge."
+#echo "You may use the current user, or create a new user with 'adduser' in a different terminal before proceeding"
+#read -p "Username: " username
+usermod -aG docker $user
+error "Granting privileges to use Docker to $user"
 
 # Check that everything is working
 echo "--> Checking that docker and docker-compose are available and ready to use..."
 docker version
 error "Checking Docker version"
-docker-compose --version
+docker-compose -version
 error "Checking Docker Compose version"
