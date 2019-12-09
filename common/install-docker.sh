@@ -2,18 +2,13 @@
 # DOMJudge installation script
 # Author: Raul Martin <raul.martin@urjc.es>
 
-echo "DOMJudge installation script v1"
+set -e
+echo "Docker installation script v1"
 
 # Check privileges
 if [[ $EUID -ne 0 ]]; then
    echo "The installation script must be run as root, change user or try with sudo" 
    exit 1
-fi
-
-# Check for a previous installation
-if [ -d "domjudge" ]; then
-  echo "Domjudge directory already exists, it looks like the installation already took place. If you want to reinstall, delete the domjudge directory first."
-  exit 1
 fi
 
 # Helper function
