@@ -45,6 +45,12 @@ sleep 1
 apt update
 error "Update apt package list"
 
+# Update system
+echo "--> Updating package index and installing dependencies..."
+sleep 1
+apt dist-upgrade -y
+error "Upgrade system using apt"
+
 # Install docker dependencies
 apt install -y apt-transport-https \
     ca-certificates \
