@@ -27,9 +27,9 @@ error(){
 
 # Try to enable cgroups memory
 echo "--> Trying to enable cgroups ram support..."
-if [ ! -z $(grep "GRUB_CMDLINE_LINUX=\x22\x22" "/etc/default/grub") ]; then 
+if [ ! -z $(grep -P "GRUB_CMDLINE_LINUX=\x22\x22" "/etc/default/grub") ]; then 
    echo "--> Found default GRUB_CMDLINE in /etc/default/grub"
-   echo "--> Enabling cgroup memory support
+   echo "--> Enabling cgroup memory support"
    sed -i "s/GRUB_CMDLINE_LINUX=\x22\x22/GRUB_CMDLINE_LINUX=\x22cgroup_enable=memory swapaccount=1\x22/g" /etc/default/grub
    error "Trying to add cgroup_enable=memory swapaccount=1 to /etc/default/grub"
    echo "--> Updating GRUB..."
@@ -42,11 +42,14 @@ else
    echo "Example: https://serverfault.com/questions/790318/cannot-enable-cgroup-enable-memory-swapaccount-1-on-gce-debian-jessie-instance"
    exit -1
 fi
+
+
 # Update package index
 echo "--> Updating package index and installing dependencies..."
 sleep 1
 apt update
 error "Update apt package list"
+
 # Install docker dependencies
 apt install -y apt-transport-https \
     ca-certificates \
@@ -54,9 +57,11 @@ apt install -y apt-transport-https \
     gnupg-agent \
     software-properties-common
 error "Install docker depedencies"
+
 # Add Docker signing key
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 error "Add docker signing key"
+
 # Add Docker repo
 echo "--> Adding Docker repository..."
 sleep 1
@@ -65,18 +70,21 @@ sudo add-apt-repository \
    $(lsb_release -cs) \
    stable"
 error "Add docker repository for current Linux"
+
 # Install docker
 echo "--> Installing Docker..."
 sleep 1
 apt update
 apt install -y docker-ce docker-ce-cli containerd.io
 error "Installing Docker, check that your Linux version is supported"
+
 # Download and install Docker Compose
 echo "--> Downloading docker compose..."
 curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
 error "Downloading Docker Compose"
 chmod +x /usr/bin/docker-compose
 error "Installing Docker Compose"
+
 # Grant permission to use Docker to the given user
 echo "--> Configuring Docker user..."
 echo "Write the username that will be granted permission to use Docker and DOMJudge."
@@ -84,6 +92,7 @@ echo "You may use the current user, or create a new user with 'adduser' in a dif
 read -p "Username: " username
 usermod -aG docker $username
 error "Granting privileges to use Docker to $username"
+
 # Check that everything is working
 echo "--> Checking that docker and docker-compose are available and ready to use..."
 docker version
