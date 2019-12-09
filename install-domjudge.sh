@@ -27,9 +27,9 @@ error(){
 
 # Try to enable cgroups memory
 echo "--> Trying to enable cgroups ram support..."
-if [ ! -z $(grep "GRUB_CMDLINE_LINUX=\x22\x22" "/etc/default/grub") ]; then 
+if [ ! -z $(grep -P "GRUB_CMDLINE_LINUX=\x22\x22" "/etc/default/grub") ]; then 
    echo "--> Found default GRUB_CMDLINE in /etc/default/grub"
-   echo "--> Enabling cgroup memory support
+   echo "--> Enabling cgroup memory support"
    sed -i "s/GRUB_CMDLINE_LINUX=\x22\x22/GRUB_CMDLINE_LINUX=\x22cgroup_enable=memory swapaccount=1\x22/g" /etc/default/grub
    error "Trying to add cgroup_enable=memory swapaccount=1 to /etc/default/grub"
    echo "--> Updating GRUB..."
