@@ -1,6 +1,6 @@
 #!/bin/bash
 # DOMJudge installation script
-# Author: Raul Martin Santamaria <raul.martin@urjc.es>
+# Author: Raul Martin <raul.martin@urjc.es>
 
 echo "DOMJudge installation script v1"
 
@@ -24,13 +24,25 @@ error(){
     fi
 }
 
+
 # Try to enable cgroups memory
 echo "--> Trying to enable cgroups ram support..."
-sed -i "s/GRUB_CMDLINE_LINUX=\x22\x22/GRUB_CMDLINE_LINUX=\x22cgroup_enable=memory swapaccount=1\x22/g" /etc/default/grub
-error "Trying to add cgroup_enable=memory swapaccount=1 to /etc/default/grub"
-echo "--> Updating GRUB..."
-update-grub
-error "Updating grub config"
+if [ ! -z $(grep "GRUB_CMDLINE_LINUX=\x22\x22" "/etc/default/grub") ]; then 
+   echo "--> Found default GRUB_CMDLINE in /etc/default/grub"
+   echo "--> Enabling cgroup memory support
+   sed -i "s/GRUB_CMDLINE_LINUX=\x22\x22/GRUB_CMDLINE_LINUX=\x22cgroup_enable=memory swapaccount=1\x22/g" /etc/default/grub
+   error "Trying to add cgroup_enable=memory swapaccount=1 to /etc/default/grub"
+   echo "--> Updating GRUB..."
+   update-grub
+   error "Updating grub config"
+elif [ ! -z $(grep "cgroup_enable=memory swapaccount=1" "/etc/default/grub") ]; then 
+   echo "--> Detected cgroups memory support, skipping step"
+else 
+   echo "!!Error!! Non-standard GRUB_CMDLINE_LINUX parameter, please enable cgroups memory support"
+   echo "Example: https://serverfault.com/questions/790318/cannot-enable-cgroup-enable-memory-swapaccount-1-on-gce-debian-jessie-instance"
+   exit -1
+fi
+
 
 # Update package index
 echo "--> Updating package index and installing dependencies..."
