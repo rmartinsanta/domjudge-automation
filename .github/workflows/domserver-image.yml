@@ -1,0 +1,13 @@
+name: Publish Domserver
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Publish Domserver
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: rmartinsanta/domserver
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
