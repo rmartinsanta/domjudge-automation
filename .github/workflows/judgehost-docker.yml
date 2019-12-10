@@ -11,3 +11,4 @@ jobs:
         name: rmartinsanta/judgehost
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+        workdir: domjudge-template/domserver
