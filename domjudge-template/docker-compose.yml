@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=domjudge
+      - MYSQL_USER=domjudge
+      - MYSQL_PASSWORD=domjudge
+      - MYSQL_DATABASE=domjudge
+    ports:
+      - 3306:3306
+    command: --max-connections=1000 --max-allowed-packet=512M
+    volumes:
+      - ./database:/var/lib/mysql
+  domjudge:
+    build: ./domserver/
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    ports:
+      - 80:80
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_ROOT_PASSWORD=domjudge
+      - MYSQL_USER=domjudge
+      - MYSQL_PASSWORD=domjudge
+      - MYSQL_DATABASE=domjudge
+      - JUDGEDAEMON_USERNAME=judgehost
+      - JUDGEDAEMON_PASSWORD=password
+  judgehost-0:
+    build: ./judgehost/
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    environment:
+      - DAEMON_ID=0
+      - DOMSERVER_HOST=domjudge
+      - DOMSERVER_BASEURL=http://domjudge/
+      - JUDGEDAEMON_USERNAME=judgehost
+      - JUDGEDAEMON_PASSWORD=domjudge
+    privileged: true
