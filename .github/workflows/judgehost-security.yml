@@ -11,7 +11,7 @@ jobs:
         run: echo ::set-output name=docker_tag::$(echo ${GITHUB_REF} | cut -d'/' -f3)-${GITHUB_SHA}
 
       - name: Build the Docker image
-        run: docker build domjudge-template/judgehost --file Dockerfile --tag judgehost:${{ steps.vars.outputs.docker_tag }}
+        run: docker build . --file domjudge-template/judgehost/Dockerfile --tag judgehost:${{ steps.vars.outputs.docker_tag }}
 
       - name: Scan with Phonito Security
         uses: phonito/phonito-scanner-action@master
