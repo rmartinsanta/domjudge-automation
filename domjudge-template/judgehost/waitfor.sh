@@ -1,6 +1,6 @@
 #!/bin/sh
 # Copy pasted from stack overflow if I remember correctly
-
+# ASDASDASD VERSION MALVADA
 TIMEOUT=300
 QUIET=0
 
