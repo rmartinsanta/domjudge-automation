@@ -59,6 +59,10 @@ apt install -y apt-transport-https \
     software-properties-common
 error "Install docker depedencies"
 
+# Install open vm tools
+apt install -y open-vm-tools
+error "Install open-vm-tools"
+
 # Add Docker signing key
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 error "Add docker signing key"
