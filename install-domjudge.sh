@@ -29,40 +29,23 @@ error(){
 chmod +x common/install-docker.sh
 common/install-docker.sh 
 
-# Download domjudge source code
-## Not necessary anymore, we are using domserver docker image
-#git clone https://github.com/DOMjudge/domjudge
-#curl "https://raw.githubusercontent.com/DOMjudge/domjudge/master/docker-compose.yml" --#output domjudge/docker-compose.yml
-#error "Cloning DOMJudge source code"
-#chown -R $username:$username domjudge
-#error "Granting privileges to user $username to use DOMJudge"
-
 echo "--> Configuring database...."
 read -p "Password for DB root user: " MYSQL_ROOT_PASSWORD
 read -p "Database name for DomJudge: " MYSQL_DATABASE
 read -p "Database user for DomJudge: " MYSQL_USER
 read -p "Database password for DomJudge: " MYSQL_PASSWORD
 
-echo "--> Writing configurations..."
+echo "--> Creating folders"
 sleep 1
 mkdir domjudge
 mkdir domjudge/database
-cp domjudge-template/docker-compose.yml domjudge/docker-compose.yml
-
 mkdir domjudge/domserver
 mkdir domjudge/judgehost
+error "Creating folders"
 
-# Random password for judgehost
-jdpw=$(openssl rand -hex 12)
-sed -i "s/JUDGEDAEMON_PASSWORD=password/JUDGEDAEMON_PASSWORD=$jdpw/g" domjudge/docker-compose.yml
-
-# Replace default password with user provided values
-sed -i "s/MYSQL_ROOT_PASSWORD=domjudge/MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD/g" domjudge/docker-compose.yml
-sed -i "s/MYSQL_PASSWORD=domjudge/MYSQL_PASSWORD=$MYSQL_PASSWORD/g" domjudge/docker-compose.yml
-sed -i "s/MYSQL_USER=domjudge/MYSQL_USER=$MYSQL_USER/g" domjudge/docker-compose.yml
-sed -i "s/MYSQL_DATABASE=domjudge/MYSQL_DATABASE=$MYSQL_DATABASE/g" domjudge/docker-compose.yml
-sed -i "s/JUDGEDAEMON_PASSWORD=domjudge/JUDGEDAEMON_PASSWORD=$jdpw/g" domjudge/docker-compose.yml
-echo "$jdpw" >domjudge/judgehost_password
+# Init pws
+chmod +x initpw.sh
+initpw.sh 
 
 echo "
 Read and UNDERSTAND the instructions before doing anything
