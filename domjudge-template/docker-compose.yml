@@ -12,7 +12,7 @@ services:
       - 3306:3306
     command: --max-connections=1000 --max-allowed-packet=512M
     volumes:
-      - /storage/docker/mysql-datadir:/var/lib/mysql
+      - sqldata:/var/lib/mysql
   domjudge:
     image: rmartinsanta/domserver:latest
     volumes:
@@ -38,3 +38,6 @@ services:
       - JUDGEDAEMON_USERNAME=judgehost
       - JUDGEDAEMON_PASSWORD=domjudge
     privileged: true
+
+volumes:
+  sqldata:

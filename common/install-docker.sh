@@ -99,6 +99,10 @@ echo "--> Granting Docker privileges to user $user..."
 usermod -aG docker $user
 error "Granting privileges to use Docker to $user"
 
+# Create storage dirs
+mkdir -p /storage/docker/mysql
+error "Creating /storage/docker"
+
 # Check that everything is working
 echo "--> Checking that docker and docker-compose are available and ready to use..."
 docker version
