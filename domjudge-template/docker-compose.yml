@@ -14,7 +14,7 @@ services:
     volumes:
       - ./database:/var/lib/mysql
   domjudge:
-    image: rmartinsanta/domjudge:latest
+    image: rmartinsanta/domserver:latest
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     ports:
