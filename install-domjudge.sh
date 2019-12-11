@@ -29,12 +29,6 @@ error(){
 chmod +x common/install-docker.sh
 common/install-docker.sh 
 
-echo "--> Configuring database...."
-read -p "Password for DB root user: " MYSQL_ROOT_PASSWORD
-read -p "Database name for DomJudge: " MYSQL_DATABASE
-read -p "Database user for DomJudge: " MYSQL_USER
-read -p "Database password for DomJudge: " MYSQL_PASSWORD
-
 echo "--> Creating folders"
 sleep 1
 mkdir domjudge

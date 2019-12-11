@@ -1,14 +1,30 @@
-#!/bin/bash
+#!/bin/bash -e
 # Init pws
 # Author: Raul Martin <raul.martin@urjc.es>
+
+# Need dbname and username for the db
+if (( $# != 2 )); then
+    echo "initpw.sh must recieve two arguments, dbname and username"
+    exit -1
+fi
 
 echo "--> Writing configurations..."
 sleep 1
 cp domjudge-template/docker-compose.yml domjudge/docker-compose.yml
 
+# Random passwords generation for all
+jdpw=$(openssl rand -hex 16)
+MYSQL_ROOT_PASSWORD=$(openssl rand -hex 16)
+MYSQL_PASSWORD=$(openssl rand -hex 16)
+MYSQL_DATABASE=$1
+MYSQL_USER=$2
 
-# Random password for judgehost
-jdpw=$(openssl rand -hex 12)
+echo "SQL Root Password: $MYSQL_ROOT_PASSWORD"
+echo "SQL DB: $1"
+echo "SQL Username: $2"
+echo "SQL Password: $MYSQL_PASSWORD"
+echo "JudgeHost API password: $jdpw"
+
 sed -i "s/JUDGEDAEMON_PASSWORD=password/JUDGEDAEMON_PASSWORD=$jdpw/g" domjudge/docker-compose.yml
 
 # Replace default password with user provided values
