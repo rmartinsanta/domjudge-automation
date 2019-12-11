@@ -14,7 +14,7 @@ services:
     volumes:
       - ./database:/var/lib/mysql
   domjudge:
-    build: ./domserver/
+    image: rmartinsanta/domjudge:latest
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     ports:
@@ -28,7 +28,7 @@ services:
       - JUDGEDAEMON_USERNAME=judgehost
       - JUDGEDAEMON_PASSWORD=password
   judgehost-0:
-    build: ./judgehost/
+    image: rmartinsanta/judgehost:latest
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     environment:
