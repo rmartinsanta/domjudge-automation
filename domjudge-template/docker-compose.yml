@@ -12,7 +12,7 @@ services:
       - 3306:3306
     command: --max-connections=1000 --max-allowed-packet=512M
     volumes:
-      - ./database:/var/lib/mysql
+      - /storage/docker/mysql-datadir:/var/lib/mysql
   domjudge:
     image: rmartinsanta/domjudge:latest
     volumes:
