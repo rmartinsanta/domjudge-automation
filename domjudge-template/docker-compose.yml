@@ -27,12 +27,13 @@ services:
       - MYSQL_DATABASE=domjudge
       - JUDGEDAEMON_USERNAME=judgehost
       - JUDGEDAEMON_PASSWORD=password
-  judgehost-0:
+  jh:
     image: rmartinsanta/judgehost:latest
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     environment:
-      - DAEMON_ID=0
+#      - DAEMON_ID=0
       - DOMSERVER_HOST=domjudge
       - DOMSERVER_BASEURL=http://domjudge/
       - JUDGEDAEMON_USERNAME=judgehost
