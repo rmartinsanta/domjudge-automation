@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Copy pasted from stack overflow if I remember correctly
 
 TIMEOUT=300
