@@ -27,6 +27,13 @@ wait_for() {
     result=$?
     if [ $result -eq 0 ] ; then
       if [ $# -gt 0 ] ; then
+        hname=$(hostname)
+        echo "Hostname: $hname"
+        myname=$(docker inspect --format={{.Name}} $hname)
+        echo "My name: $myname"
+        id="${myname: -1}"
+        echo "Id: $id"
+	export DAEMON_ID=$id
         exec "$@"
       fi
       exit 0
