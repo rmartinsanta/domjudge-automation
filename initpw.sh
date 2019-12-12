@@ -10,6 +10,7 @@ fi
 
 echo "--> Writing configurations..."
 sleep 1
+mkdir -p domjudge
 cp domjudge-template/docker-compose.yml domjudge/docker-compose.yml
 
 # Random passwords generation for all
