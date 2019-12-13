@@ -31,58 +31,28 @@ common/install-docker.sh
 
 echo "--> Creating folders"
 sleep 1
-mkdir domjudge
-mkdir domjudge/database
-mkdir domjudge/domserver
-mkdir domjudge/judgehost
+mkdir -p domjudge/domserver
+mkdir -p domjudge/judgehost
 error "Creating folders"
 
 # Init pws
-chmod +x initpw.sh
-initpw.sh 
+chmod +x changepasswords.sh
+changepasswords.sh >passwords.txt
 
 echo "
-Read and UNDERSTAND the instructions before doing anything
+-- Next steps --
+1. REBOOT THE SERVER! Some configurations changes are not applied yet.
+2. Start the database and the domserver with NO judgehosts --> ./start.sh 0
+3. Get the default admin password for domjudge from the logs --> ./viewlogs.sh
+4. Login in Domjudge and go to the Users section, edit the Judgehost user and set its password to the previously generated one. You can retrieve the passwords from the file passwords.txt, remove as soon as secured somewhere else.
+5. Change the admin user password.
+6. Launch as many judgehosts as you want with ./start N, but note that any judgehost that cannot be automatically assigned to a core will die, so make sure you have enough cores.
+Judgehosts should register automatically and appear in the corresponding section.
+7. Stop the services at any time executing ./stop.sh.
 
--- Steps to finish installation --
-1. REBOOT THE SERVER. Do it! NOW!
-2. Save the Judgehost password to a safe place, you will need it each time you want to add a new judgehost --> $jdpw
-3. cd into the domjudge directory and execute ./start.sh. The first time will be slow, as it needs to create and configure everything.
-4. As you will see in the logs, the judgehost container WILL FAIL. This is normal, as the credentials has not been added yet to the Domserver. Open a browser and login using the generated domjudge credentials, user admin, the password is in domjudge/initial_admin_password.secret.
-5. Create a new user or modify a user in the web admin interface so the username is judgehost, the role is system judgehost and the password is $jdpw.
-6. Change the admin password to something you will remember.
-7. Stop the services executing ./stop.sh inside the domjudge folder.
-8. Start the services executing ./start.sh inside the domjudge folder. Everything should start without errors.
-9. Verify in the judgehosts section in the admin web interface that the judgehost has registered itself successfully.
-
--- Normal Operations --
-Start services: start.sh
-Stop services: stop.sh
-
--- Common Problems --
-Problem 1: start.sh script fails or exits without doing anything --> Execute stop.sh, verify that screen -ls does not return any result, if there are any active domjudge screen kill them. (screen -r name followed by exit).
-Problem 2: I do not know how to do X in DomJudge --> Login and access the docs section, everything should be documented.
-Problem 3: Judgehost did not register itself / does not appear in the admin interface --> Double check that a user with username judgehost and the given password exists, and verify that the user has the system judgehost role.
-
--- I NEED HEEEEELP --
+-- Any problem? --
 1. Try to google the problem first.
 2. Open an issue in https://github.com/rmartinsanta/domjudge-automation/
-" >Instructions.txt
-
-echo "--> Doing a test run"
-cd domjudge
-docker-compose up --build --abort-on-container-exit
-
-echo "--> Retrieving admin password file (initial_admin_password.secret)"
-domserver=$(docker-compose ps -q domjudge)
-docker cp $domserver:/opt/domjudge/domserver/etc/initial_admin_password.secret initial_admin_password.secret
-error "Trying to get initial admin password from domserver ($domserver) container"
-cd ..
-
-echo "--> Cleaning up..."
-sleep 1
-chown -R $username:$username domjudge
-error "Failed permission check"
-echo "IMPORTANT: A new file called Instructions.txt has been created, follow the instructions carefully."
-echo "INSTALLATION COMPLETED: you must reboot NOW."
+" >next_steps.txt
+cat next_steps.txt
 
