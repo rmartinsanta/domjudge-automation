@@ -32,8 +32,9 @@ wait_for() {
         myname=$(docker inspect --format={{.Name}} $hname)
         echo "My name: $myname"
         id="${myname: -1}"
-        echo "Id: $id"
-	export DAEMON_ID=$id
+        idlinux="$(($id-1))"
+        echo "Id: $id, idlinux: $idlinux"
+	export DAEMON_ID=$idlinux
         exec "$@"
       fi
       exit 0
