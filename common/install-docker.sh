@@ -91,11 +91,11 @@ chmod +x /usr/bin/docker-compose
 error "Installing Docker Compose"
 
 # Grant permission to use Docker to the given user
-user=$(whoami)
+#user=$(whoami)
+echo "Write the username that will be granted permission to use Docker and DOMJudge."
+echo "You may use the current user, or create a new user with 'adduser' in a different terminal before proceeding"
+read -p "Username: " user
 echo "--> Granting Docker privileges to user $user..."
-#echo "Write the username that will be granted permission to use Docker and DOMJudge."
-#echo "You may use the current user, or create a new user with 'adduser' in a different terminal before proceeding"
-#read -p "Username: " username
 usermod -aG docker $user
 error "Granting privileges to use Docker to $user"
 
