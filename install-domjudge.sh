@@ -37,7 +37,7 @@ error "Creating folders"
 
 # Init pws
 chmod +x changepasswords.sh
-changepasswords.sh djdb dju >passwords.txt
+./changepasswords.sh djdb dju >passwords.txt
 
 echo "
 -- Next steps --
