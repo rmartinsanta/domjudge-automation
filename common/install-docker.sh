@@ -30,7 +30,7 @@ if [ ! -z $(grep -P "GRUB_CMDLINE_LINUX=\x22\x22" "/etc/default/grub") ]; then
    echo "--> Updating GRUB..."
    update-grub
    error "Updating grub config"
-elif [ ! -z $(grep "cgroup_enable=memory swapaccount=1" "/etc/default/grub") ]; then 
+elif [[ ! -z $(grep "cgroup_enable=memory swapaccount=1" "/etc/default/grub") ]]; then 
    echo "--> Detected cgroups memory support, skipping step"
 else 
    echo "!!Error!! Non-standard GRUB_CMDLINE_LINUX parameter, please enable cgroups memory support"
