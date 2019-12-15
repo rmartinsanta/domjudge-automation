@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copy pasted from stack overflow if I remember correctly
+# Copy pasted from stack overflow if I remember correctly, added setenv.sh
 
 TIMEOUT=300
 QUIET=0
@@ -27,15 +27,7 @@ wait_for() {
     result=$?
     if [ $result -eq 0 ] ; then
       if [ $# -gt 0 ] ; then
-        hname=$(hostname)
-        echo "Hostname: $hname"
-        myname=$(docker inspect --format={{.Name}} $hname)
-        echo "My name: $myname"
-        id="${myname: -1}"
-        idlinux="$(($id-1))"
-        echo "Id: $id, idlinux: $idlinux"
-	export DAEMON_ID=$idlinux
-        exec "$@"
+        ./setenv.sh "$@"
       fi
       exit 0
     fi
