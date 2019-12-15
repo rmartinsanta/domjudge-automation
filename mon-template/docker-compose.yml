@@ -1,0 +1,127 @@
+# Source: https://github.com/RiFi2k/dockerize-your-dev/blob/master/monitoring-compose.yml
+# Changed network config, expose port 3000 for Grafana
+
+version: "3"
+
+services:
+  prometheus:
+    build:
+      context: monitoring/prometheus/
+    container_name: prometheus
+    volumes:
+      - ./monitoring/prometheus/config/:/etc/prometheus/
+      - prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    depends_on:
+      - cadvisor
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: "4m"
+        max-file: "10"
+    environment:
+      - VIRTUAL_HOST=prometheus.ada.numa.host
+      - VIRTUAL_PORT=9090
+      - LETSENCRYPT_HOST=prometheus.ada.numa.host
+      - LETSENCRYPT_EMAIL=raul.martin@urjc.es
+
+  cadvisor:
+    build:
+      context: monitoring/cadvisor/
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: "4m"
+        max-file: "10"
+    environment:
+      - VIRTUAL_HOST=cadvisor.ada.numa.host
+      - VIRTUAL_PORT=8080
+      - LETSENCRYPT_HOST=cadvisor.ada.numa.host
+      - LETSENCRYPT_EMAIL=raul.martin@urjc.es
+
+  alertmanager:
+    build:
+      context: monitoring/alertmanager/
+    container_name: alertmanager
+    volumes:
+      - ./monitoring/alertmanager/config/:/etc/alertmanager/
+    restart: always
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+    logging:
+      driver: json-file
+      options:
+        max-size: "4m"
+        max-file: "10"
+    environment:
+      - VIRTUAL_HOST=alertmanager.ada.numa.host
+      - VIRTUAL_PORT=9093
+      - LETSENCRYPT_HOST=alertmanager.ada.numa.host
+      - LETSENCRYPT_EMAIL=raul.martin@urjc.es
+
+  node-exporter:
+    build:
+      context: monitoring/node-exporter/
+    container_name: node-exporter
+    volumes:
+      - "/proc:/host/proc:ro"
+      - "/sys:/host/sys:ro"
+      - "/:/rootfs:ro"
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: "4m"
+        max-file: "10"
+
+  grafana:
+    build:
+      context: monitoring/grafana/
+    container_name: grafana
+    user: "104"
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana:/var/lib/grafana
+      - ./monitoring/grafana/config/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./monitoring/grafana/config/config.monitoring
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: "4m"
+        max-file: "10"
+    environment:
+      - VIRTUAL_HOST=grafana.ada.numa.host
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_HOST=grafana.ada.numa.host
+      - LETSENCRYPT_EMAIL=raul.martin@urjc.es
+
+volumes:
+  prometheus:
+  grafana:
+
+#networks:
+#  default:
+#    external:
+#      name: webproxy
