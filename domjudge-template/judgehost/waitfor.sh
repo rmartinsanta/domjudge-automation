@@ -27,7 +27,7 @@ wait_for() {
     result=$?
     if [ $result -eq 0 ] ; then
       if [ $# -gt 0 ] ; then
-        ./setenv.sh "$@"
+        /scripts/setenv.sh "$@"
       fi
       exit 0
     fi
