@@ -8,5 +8,6 @@ if (( $# != 1 )); then
     exit -1
 fi
 
-docker-compose pull -f domjudge/docker-compose.yml
-docker-compose up --scale jh=$1 -d -f domjudge/docker-compose.yml
+cd domjudge
+docker-compose pull
+docker-compose up --scale jh=$1 -d
