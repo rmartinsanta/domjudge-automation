@@ -10,6 +10,7 @@ services:
       - MYSQL_DATABASE=domjudge
     ports:
       - 3306:3306
+      - 2631:631
     command: --max-connections=1000 --max-allowed-packet=512M
     volumes:
       - sqldata:/var/lib/mysql
@@ -33,7 +34,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     environment:
-#      - DAEMON_ID=0
+#      - DAEMON_ID=0  # Daemon ID will be configured at runtime
       - DOMSERVER_HOST=domjudge
       - DOMSERVER_BASEURL=http://domjudge/
       - JUDGEDAEMON_USERNAME=judgehost

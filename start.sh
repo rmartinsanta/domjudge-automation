@@ -11,3 +11,5 @@ fi
 cd domjudge
 docker-compose pull
 docker-compose up --scale jh=$1 -d
+
+echo ">> Containers are starting, allow some minutes to complete initialization"

@@ -1,0 +1,5 @@
+Install CUPS on domjudge (preinstalled in rmartinsanta/domserver image)
+Listen on 0.0.0.0
+Allow from your local cups server, or your local ip
+Add user with group 'lpadmin'
+Login on the web interface and configure printer

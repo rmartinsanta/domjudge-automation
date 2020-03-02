@@ -1,5 +1,5 @@
-# Source: https://github.com/RiFi2k/dockerize-your-dev/blob/master/monitoring-compose.yml
-# Changed network config, expose port 3000 for Grafana
+# Original config from: https://github.com/RiFi2k/dockerize-your-dev/blob/master/monitoring-compose.yml
+# Expose grafana, several changes
 
 version: "3"
 
@@ -97,7 +97,7 @@ services:
     container_name: grafana
     user: "104"
     ports:
-      - 3000:3000
+      - 1337:3000
     depends_on:
       - prometheus
     volumes:
@@ -121,7 +121,3 @@ volumes:
   prometheus:
   grafana:
 
-#networks:
-#  default:
-#    external:
-#      name: webproxy
