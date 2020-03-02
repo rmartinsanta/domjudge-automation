@@ -1,5 +1,8 @@
 # Domjudge Automation
 
+## Recommemded OS
+We have installed and deployed several Domjudge instances using Ubuntu 18.04 LTS. Other distros may or may not work. 
+
 ## Domjudge installation
 Run ./install-domjudge.sh and follow the provided steps in the script.
 
