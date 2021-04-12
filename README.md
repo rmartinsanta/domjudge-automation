@@ -13,6 +13,11 @@ Run './start.sh N', where N is the number of judgehost to provision (must be < t
 ## Domjudge stop services
 Run './stop.sh'
 
+## Domjudge configure affiliations logos, team logos, countries, etc.
+```bash
+docker cp adabyron/images/. containername:/opt/domjudge/domserver/webapp/public/images/
+```
+
 ## Monitoring stack
 
 * Change password inside mon-template/monitoring/grafana/config/config.monitoring
