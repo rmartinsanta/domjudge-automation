@@ -85,7 +85,7 @@ error "Installing Docker, check that your Linux version is supported"
 
 # Download and install Docker Compose
 echo "--> Downloading docker compose..."
-curl -L "https://github.com/docker/compose/releases/download/1.28.6/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
 error "Downloading Docker Compose"
 chmod +x /usr/bin/docker-compose
 error "Installing Docker Compose"
