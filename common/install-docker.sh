@@ -107,5 +107,5 @@ error "Creating /storage/docker"
 echo "--> Checking that docker and docker-compose are available and ready to use..."
 docker version
 error "Checking Docker version"
-docker-compose -version
+docker-compose -v
 error "Checking Docker Compose version"
