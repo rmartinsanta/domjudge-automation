@@ -25,7 +25,11 @@ echo "--> Trying to enable cgroups ram support..."
 if [ ! -z $(grep -P "GRUB_CMDLINE_LINUX=\x22\x22" "/etc/default/grub") ]; then 
    echo "--> Found default GRUB_CMDLINE in /etc/default/grub"
    echo "--> Enabling cgroup memory support"
-   sed -i "s/GRUB_CMDLINE_LINUX=\x22\x22/GRUB_CMDLINE_LINUX=\x22cgroup_enable=memory swapaccount=1\x22/g" /etc/default/grub
+   if [[ ! $(lsb_release -d) == *"2"[2-9]* ]]; then
+       sed -i "s/GRUB_CMDLINE_LINUX=\x22\x22/GRUB_CMDLINE_LINUX=\x22cgroup_enable=memory swapaccount=1\x22/g" /etc/default/grub
+   else
+       sed -i "s/GRUB_CMDLINE_LINUX=\x22\x22/GRUB_CMDLINE_LINUX=\x22cgroup_enable=memory swapaccount=1 systemd.unified_cgroup_hierarchy=false\x22/g" /etc/default/grub
+   fi
    error "Trying to add cgroup_enable=memory swapaccount=1 to /etc/default/grub"
    echo "--> Updating GRUB..."
    update-grub
