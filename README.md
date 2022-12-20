@@ -1,5 +1,6 @@
 
 # Domjudge Automation
+This repo contains different utilities to simplify the deployment and administration of Domjudge instances.
 
 ## Recommended OS
 
