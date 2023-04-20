@@ -44,5 +44,5 @@ Optionally, a monitoring stack can be easily deployed to keep track of how the j
 Open an issue with at least the following info:
 - OS version
 - Installation logs if applicable
-- Execution logs if applicable (use ./viewlogs.sh)
+- Execution logs if applicable (use ./viewlogs.sh >logfile.txt to export them)
 - Is the issue reproducible? With what steps?
