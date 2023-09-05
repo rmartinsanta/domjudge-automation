@@ -34,4 +34,10 @@ sed -i "s/MYSQL_PASSWORD=domjudge/MYSQL_PASSWORD=$MYSQL_PASSWORD/g" domjudge/doc
 sed -i "s/MYSQL_USER=domjudge/MYSQL_USER=$MYSQL_USER/g" domjudge/docker-compose.yml
 sed -i "s/MYSQL_DATABASE=domjudge/MYSQL_DATABASE=$MYSQL_DATABASE/g" domjudge/docker-compose.yml
 sed -i "s/JUDGEDAEMON_PASSWORD=domjudge/JUDGEDAEMON_PASSWORD=$jdpw/g" domjudge/docker-compose.yml
+
+sed -i "s/MARIADB_ROOT_PASSWORD=domjudge/MARIADB_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD/g" domjudge/docker-compose.yml
+sed -i "s/MARIADB_PASSWORD=domjudge/MARIADB_PASSWORD=$MYSQL_PASSWORD/g" domjudge/docker-compose.yml
+sed -i "s/MARIADB_USER=domjudge/MARIADB_USER=$MYSQL_USER/g" domjudge/docker-compose.yml
+sed -i "s/MARIADB_DATABASE=domjudge/MARIADB_DATABASE=$MYSQL_DATABASE/g" domjudge/docker-compose.yml
+sed -i "s/JUDGEDAEMON_PASSWORD=domjudge/JUDGEDAEMON_PASSWORD=$jdpw/g" domjudge/docker-compose.yml
 echo "$jdpw" >domjudge/judgehost_password
