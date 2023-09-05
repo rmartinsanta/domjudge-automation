@@ -45,4 +45,4 @@ Open an issue with at least the following info:
 - OS version
 - Installation logs if applicable
 - Execution logs if applicable (use ./viewlogs.sh >logfile.txt to export them)
-- Is the issue reproducible? With what steps?
+- Is the issue reproducible? What are the steps to reproduce the issue?
