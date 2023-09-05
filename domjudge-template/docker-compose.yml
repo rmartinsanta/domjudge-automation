@@ -4,10 +4,10 @@ services:
   db:
     image: mariadb
     environment:
-      - MYSQL_ROOT_PASSWORD=domjudge
-      - MYSQL_USER=domjudge
-      - MYSQL_PASSWORD=domjudge
-      - MYSQL_DATABASE=domjudge
+      - MARIADB_ROOT_PASSWORD=domjudge
+      - MARIADB_USER=domjudge
+      - MARIADB_PASSWORD=domjudge
+      - MARIADB_DATABASE=domjudge
     ports:
       - 3306:3306
       - 2631:631
