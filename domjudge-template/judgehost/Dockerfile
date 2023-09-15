@@ -1,5 +1,5 @@
 FROM domjudge/judgehost
-RUN apt-get update && apt-get install -y netcat docker.io
+RUN apt-get update && apt-get install -y netcat docker.io lsb-release
 ADD waitfor.sh /scripts/waitfor.sh
 ADD setenv.sh /scripts/setenv.sh
 ADD start.sh /scripts/start.sh
