@@ -32,7 +32,7 @@ services:
     image: rmartinsanta/judgehost:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup
     environment:
 #      - DAEMON_ID=0  # Daemon ID will be configured at runtime
       - DOMSERVER_HOST=domjudge
