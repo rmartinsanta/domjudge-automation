@@ -42,74 +42,47 @@ else
    exit -1
 fi
 
-
-# Update package index
-echo "--> Updating package index and installing dependencies..."
-sleep 1
-apt update
+echo "--> Updating packages..."
+apt update 
 error "Update apt package list"
-
-# Update system
-echo "--> Updating package index and installing dependencies..."
-sleep 1
 apt dist-upgrade -y
-error "Upgrade system using apt"
+error "Upgrade apt packages"
 
-# Install docker dependencies
+echo "--> Installing dependencies..."
 apt install -y apt-transport-https \
     ca-certificates \
     curl \
     gnupg-agent \
-    software-properties-common
+    software-properties-common \
+    open-vm-tools
 error "Install docker depedencies"
 
-# Install open vm tools
-apt install -y open-vm-tools
-error "Install open-vm-tools"
-
-# Add Docker signing key
+echo "--> Adding Docker signing key..."
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 error "Add docker signing key"
 
-# Add Docker repo
 echo "--> Adding Docker repository..."
-sleep 1
 sudo add-apt-repository \
    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
    stable"
 error "Add docker repository for current Linux"
 
-# Install docker
 echo "--> Installing Docker..."
-sleep 1
 apt update
-apt install -y docker-ce docker-ce-cli containerd.io
-error "Installing Docker, check that your Linux version is supported"
+error "Error running apt update after adding Docker repository, check that your Linux version is supported"
+apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+error "Error installing Docker, check that your Linux version is supported"
 
-# Download and install Docker Compose
-echo "--> Downloading docker compose..."
-curl -L "https://github.com/docker/compose/releases/download/v2.10.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
-error "Downloading Docker Compose"
-chmod +x /usr/bin/docker-compose
-error "Installing Docker Compose"
-
-# Grant permission to use Docker to the given user
-#user=$(whoami)
-echo "Write the username that will be granted permission to use Docker and DOMJudge."
-echo "You may use the current user, or create a new user with 'adduser' in a different terminal before proceeding"
-read -p "Username: " user
-echo "--> Granting Docker privileges to user $user..."
-usermod -aG docker $user
-error "Granting privileges to use Docker to $user"
-
-# Create storage dirs
-mkdir -p /storage/docker/mysql
-error "Creating /storage/docker"
+# Grant permission to use Docker to the current user
+echo "--> Granting Docker permission to $(whoami)"
+usermod -aG docker "$(whoami)"
+error "Granting privileges to use Docker to $(whoami)"
 
 # Check that everything is working
-echo "--> Checking that docker and docker-compose are available and ready to use..."
-docker version
-error "Checking Docker version"
-docker-compose -v
-error "Checking Docker Compose version"
+echo "--> Checking that docker is ready to use..."
+docker run hello-world
+error "Running example container"
+
+echo "[OK] Docker installation finished"
+
