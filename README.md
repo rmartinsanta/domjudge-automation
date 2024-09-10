@@ -51,8 +51,8 @@ users:
   - name: domjudge
     lock_passwd: false
     chpasswd: { expire: False }
-    # Genera una contrasena con 'echo changethisurjcpassword | mkpasswd -m sha-512 -s'
-    # cambiando 'changethisurjcpassword' por una contrasena generada por ti
+    # Generate a password hash using for example the following command: 'echo changethisurjcpassword | mkpasswd -m sha-512 -s'
+    # Change 'changethisurjcpassword' with the password you want to actually use
     passwd: "$6$RJh/AweyyMOxuRGt$tqPMOhuG30JcAFoKypKH6h/B7E8Q/r3hE/dx2OvxrqjZDt7hZAYG/oDn4MrQyp0rIXh7.YsAnGTJ3Weex43gZ0"
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
     groups: sudo
