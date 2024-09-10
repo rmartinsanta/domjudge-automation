@@ -65,7 +65,7 @@ docker compose up --scale jh=0 |
 # END INITIAL PASSWORDS #
 #########################
 EOF
-   } | tee passwords.txt
+   } | tee -a ../passwords.txt
    sed -i "s/JUDGEDAEMON_PASSWORD=password/JUDGEDAEMON_PASSWORD=$jhpw/g" docker-compose.yml
     docker compose down
     cat >/dev/null
