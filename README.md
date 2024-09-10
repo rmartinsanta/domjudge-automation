@@ -70,20 +70,35 @@ runcmd:
 
 ## Domjudge installation
 
-Run `./install-domjudge.sh` and follow the provided steps in the script.
+### Prerequisites
+Install git and clone this repository to a folder of your choosing. Example:
+```bash
+sudo apt install git
+git clone https://github.com/rmartinsanta/domjudge-automation/
+cd domjudge-automation
+```
+Note that if you have deployed an OpenStack instance with the instructions from the following section, git is already installed and the repository is cloned at `/home/domjudge/domjudge-automation`.
 
-## Starting services
+The installation process is completely automated and can be run using `sudo ./install-domjudge.sh`.
+
+## Starting DomJudge
 
 Run `./start.sh N`, where N is the number of judgehost to provision (must be < to the number of cores available).
 The number of available judgehosts can be changed without stopping the services, just by executing `./start.sh` again.
 For example, if we first execute DomJudge with `./start.sh 1`, and then we want to add 3 additional JudgeHost, we can just execute `./start.sh 4` and containers will scale accordingly. Reducing the number of judgehosts is also supported.
 
+Note that it is normal if the first time DomJudge is started, no judgehosts appear inmediately. It can take up to 20 minutes for the Judgehosts to complete their setup and register themselves inside the DomJudge web interface. You may monitor their progress by using the `./viewlogs.sh` script.
 
-## Stop services and restarting
+
+## Stopping DomJudge and restarting
 
 Run `./stop.sh` and wait until all containers are stopped. 
 
 Tip: Remember that the number of judgehosts can be changed at any moment while the Judge is running to scale to any required workload, and calling `./stop.sh` is not required. If for example, the judge was deployed using `./start.sh 4`, and later the command `./start.sh 8` is run, 4 new judgehosts will created without touching the existing ones.
+
+## Retrieving logs
+
+Run: `./viewlogs.sh` to see what is happening inside the containers.
 
 ## Customizing logos, team images, etc
 
