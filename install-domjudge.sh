@@ -29,13 +29,16 @@ error(){
 chmod +x common/install-docker.sh
 common/install-docker.sh 
 
+# Create storage dirs
 echo "--> Creating folders"
-sleep 1
+mkdir -p /storage/docker/mysql
+error "Creating /storage/docker/mysql"
 mkdir -p domjudge/domserver
+error "Creating domjudge/domserver"
 mkdir -p domjudge/judgehost
-error "Creating folders"
+error "Creating domjudge/judgehost"
 
-# Init pws
+# Initialize passwords
 chmod +x changepasswords.sh
 ./changepasswords.sh djdb dju >passwords.txt
 
