@@ -77,9 +77,10 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker
 error "Error installing Docker, check that your Linux version is supported"
 
 # Grant permission to use Docker to the current user
-echo "--> Granting Docker permission to $(whoami)"
-usermod -aG docker "$(whoami)"
-error "Granting privileges to use Docker to $(whoami)"
+echo "--> Granting Docker permission to domjudge user"
+usermod -aG docker domjudge || true
+# Allow it to fail if user does not exist
+#error "Granting privileges to use Docker to domjudge user"
 
 # Check that everything is working
 echo "--> Checking that docker is ready to use..."

@@ -3,4 +3,4 @@
 # Author: Raul Martin <raul.martin@urjc.es>
 
 cd domjudge
-docker-compose logs
+docker compose logs
