@@ -50,6 +50,9 @@ docker compose up --scale jh=0 |
     grep -q "php entered RUNNING state"
     adminpw=$(docker compose logs | grep -oP 'Initial admin password is\s*\K.*')
     jhpw=$(docker compose logs | grep -oP 'Initial judgehost password is\s*\K.*')
+
+    adminpw=$(echo $adminpw | tr -d ' ')
+    jhpw=$(echo $jhpw | tr -d ' ')
     
     { cat <<EOF
 #########################
