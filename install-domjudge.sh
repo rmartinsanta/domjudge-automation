@@ -42,20 +42,48 @@ error "Creating domjudge/judgehost"
 chmod +x changepasswords.sh
 ./changepasswords.sh djdb dju >passwords.txt
 
+# Download current version of containers and try to extract domjudge admin password
+cd domjudge
+docker compose pull
+docker compose up --scale jh=0 |
+  tee /dev/tty | {
+    grep -q "php entered RUNNING state"
+    adminpw=$(docker compose logs | grep -oP 'Initial admin password is\s*\K.*')
+    jhpw=$(docker compose logs | grep -oP 'Initial admin password is\s*\K.*')
+    
+    { cat <<EOF
+#########################
+#   INITIAL PASSWORDS   #
+#########################
+
+- Admin user: admin
+- Admin password: $adminpw
+- Judgehost user: judgehost
+- Judgehost password: $jhpw
+
+#########################
+# END INITIAL PASSWORDS #
+#########################
+EOF
+   } | tee passwords.txt
+   sed -i "s/JUDGEDAEMON_PASSWORD=password/JUDGEDAEMON_PASSWORD=$jhpw/g" docker-compose.yml
+    docker compose down
+    cat >/dev/null
+  }
+
+
 echo "
 -- Next steps --
-1. REBOOT THE SERVER! Some configurations changes are not applied yet.
-2. Start the database and the domserver with NO judgehosts --> ./start.sh 0
-3. Get the default admin password for domjudge from the logs --> ./viewlogs.sh
-4. Login in Domjudge and go to the Users section, edit the Judgehost user and set its password to the previously generated one. You can retrieve the passwords from the file passwords.txt, remove as soon as secured somewhere else.
-5. Change the admin user password.
-6. Launch as many judgehosts as you want with ./start N, but note that any judgehost that cannot be automatically assigned to a core will die, so make sure you have enough cores.
-Judgehosts should register automatically and appear in the corresponding section.
-7. Stop the services at any time executing ./stop.sh.
+1. REBOOT THE SERVER! Some changes need a reboot to be applied.
+2. Retrieve your passwords from passwords.txt, store them somewhere safe and shred the file. 
+3. Launch DomJudge with N judgehosts with './start.sh N'. Note that N can be arbitrarily large, but any judgehost that cannot be assigned to a CPU core will die, so make sure you have enough cores.
+Judgehosts should register automatically and appear in the corresponding section inside the DomJudge interface
+4. Stop the services at any time executing ./stop.sh.
 
 -- Any problem? --
 1. Try to google the problem first.
 2. Open an issue in https://github.com/rmartinsanta/domjudge-automation/
+When reporting issues, please attach the output of 'docker ps' and './viewlogs.sh'.
 " >next_steps.txt
 cat next_steps.txt
 
