@@ -19,6 +19,8 @@ error(){
     fi
 }
 
+# Automatically restart services as required during apt install
+export NEEDRESTART_MODE=a
 
 # Try to enable cgroups memory
 echo "--> Trying to enable cgroups ram support..."
