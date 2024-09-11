@@ -77,7 +77,7 @@ sudo apt install git
 git clone https://github.com/rmartinsanta/domjudge-automation/
 cd domjudge-automation
 ```
-Note that if you have deployed an OpenStack instance with the instructions from the following section, git is already installed and the repository is cloned at `/home/domjudge/domjudge-automation`.
+Note that if you have deployed an OpenStack instance with the instructions from the previous section, git is already installed and the repository is cloned at `/home/domjudge/domjudge-automation`.
 
 The installation process is completely automated and can be run using `sudo ./install-domjudge.sh`.
 
@@ -99,6 +99,11 @@ Tip: Remember that the number of judgehosts can be changed at any moment while t
 ## Retrieving logs
 
 Run: `./viewlogs.sh` to see what is happening inside the containers.
+
+## Resetting DomJudge
+
+The `./reset.sh` script will remove all stored data and prune Docker containers. After resetting the instance, you need to re-run the installation script.
+
 
 ## Customizing logos, team images, etc
 
