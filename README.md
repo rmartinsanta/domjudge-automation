@@ -31,11 +31,19 @@ users:
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
     groups: sudo
     shell: /bin/bash
+#Configure timezone
+timezone: Europe/Madrid 
+# Execute apt update && apt upgrade on first boot
+package_update: true
+package_upgrade: true
 packages:
   - wget
   - fail2ban
   - git
+  - unattended-upgrades
 runcmd:
+  - ["systemctl", "start", "fail2ban", "unattended-upgrades"]
+  - ["systemctl", " enable", "fail2ban", "unattended-upgrades"] 
   - ["git", "clone", "https://github.com/rmartinsanta/domjudge-automation", "/home/domjudge/domjudge-automation"]
   - ["chown", "-R", "domjudge:domjudge", "/home/domjudge/domjudge-automation"]
 ```
@@ -57,11 +65,17 @@ users:
     sudo: ['ALL=(ALL) NOPASSWD:ALL']
     groups: sudo
     shell: /bin/bash
+# Execute apt update && apt upgrade on first boot
+package_update: true
+package_upgrade: true
 packages:
   - wget
   - fail2ban
   - git
+  - unattended-upgrades
 runcmd:
+  - ["systemctl", "start", "fail2ban", "unattended-upgrades"]
+  - ["systemctl", " enable", "fail2ban", "unattended-upgrades"] 
   # Clone the repo and set owner to domjudge user
   - ["git", "clone", "https://github.com/rmartinsanta/domjudge-automation", "/home/domjudge/domjudge-automation"]
   - ["chown", "-R", "domjudge:domjudge", "/home/domjudge/domjudge-automation"]
