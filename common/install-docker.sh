@@ -243,7 +243,6 @@ get_distribution() {
 	echo "$lsb_dist"
 }
 
-echo_docker_as_nonroot() {
 	if is_dry_run; then
 		return
 	fi
@@ -513,8 +512,7 @@ do_install() {
 				fi
 				$sh_c "DEBIAN_FRONTEND=noninteractive apt-get -y -qq install $pkgs >/dev/null"
 			)
-			echo_docker_as_nonroot
-			exit 0
+			return
 			;;
 		centos|fedora|rhel)
 			repo_file_url="$DOWNLOAD_URL/linux/$lsb_dist/$REPO_FILE"
@@ -611,8 +609,7 @@ do_install() {
 				fi
 				$sh_c "$pkg_manager $pkg_manager_flags install $pkgs"
 			)
-			echo_docker_as_nonroot
-			exit 0
+			return
 			;;
 		sles)
 			if [ "$(uname -m)" != "s390x" ]; then
@@ -689,8 +686,7 @@ do_install() {
 				fi
 				$sh_c "zypper -q install -y $pkgs"
 			)
-			echo_docker_as_nonroot
-			exit 0
+			return
 			;;
 		*)
 			if [ -z "$lsb_dist" ]; then
