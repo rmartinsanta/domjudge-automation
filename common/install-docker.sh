@@ -59,13 +59,21 @@ apt install -y apt-transport-https \
     open-vm-tools
 error "Install docker depedencies"
 
-echo "--> Adding Docker signing key..."
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+echo "Installing /etc/apt/keyrings"
+install -m 0755 -d /etc/apt/keyrings
+error "Installing /etc/apt/keyrings"
+
+echo "--> Downloading Docker signing key..."
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 error "Add docker signing key"
+
+echo "--> Adding Docker signing key..."
+chmod a+r /etc/apt/keyrings/docker.asc
+error "Add Docker signing key"
 
 echo "--> Adding Docker repository..."
 add-apt-repository -y \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
    stable"
 error "Add docker repository for current Linux"
