@@ -74,8 +74,7 @@ error "Add Docker signing key"
 echo "--> Adding Docker repository..."
 add-apt-repository -y \
    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
+   $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 error "Add docker repository for current Linux"
 
 echo "--> Installing Docker..."
