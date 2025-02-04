@@ -85,10 +85,20 @@ apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker
 error "Error installing Docker, check that your Linux version is supported"
 
 # Grant permission to use Docker to the current user
-echo "--> Granting Docker permission to domjudge user"
-usermod -aG docker domjudge || true
-# Allow it to fail if user does not exist
-#error "Granting privileges to use Docker to domjudge user"
+
+# Check if user domjudge exists
+if id "domjudge" &>/dev/null; then
+    echo "User domjudge exists. Granting Docker permission."
+    usermod -aG docker domjudge
+else
+    # Retrieve the user that called the script using sudo
+    if [ -n "$SUDO_USER" ]; then
+        echo "User domjudge does not exist. Granting Docker permission to $SUDO_USER."
+        usermod -aG docker "$SUDO_USER"
+    else
+        echo "Unable to determine a user to grant Docker permission. Skipping."
+    fi
+fi
 
 # Check that everything is working
 echo "--> Checking that docker is ready to use..."
