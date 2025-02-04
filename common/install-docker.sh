@@ -243,41 +243,6 @@ get_distribution() {
 	echo "$lsb_dist"
 }
 
-	if is_dry_run; then
-		return
-	fi
-	if command_exists docker && [ -e /var/run/docker.sock ]; then
-		(
-			set -x
-			$sh_c 'docker version'
-		) || true
-	fi
-
-	# intentionally mixed spaces and tabs here -- tabs are stripped by "<<-EOF", spaces are kept in the output
-	echo
-	echo "================================================================================"
-	echo
-	if version_gte "20.10"; then
-		echo "To run Docker as a non-privileged user, consider setting up the"
-		echo "Docker daemon in rootless mode for your user:"
-		echo
-		echo "    dockerd-rootless-setuptool.sh install"
-		echo
-		echo "Visit https://docs.docker.com/go/rootless/ to learn about rootless mode."
-		echo
-	fi
-	echo
-	echo "To run the Docker daemon as a fully privileged service, but granting non-root"
-	echo "users access, refer to https://docs.docker.com/go/daemon-access/"
-	echo
-	echo "WARNING: Access to the remote API on a privileged Docker daemon is equivalent"
-	echo "         to root access on the host. Refer to the 'Docker daemon attack surface'"
-	echo "         documentation for details: https://docs.docker.com/go/attack-surface/"
-	echo
-	echo "================================================================================"
-	echo
-}
-
 # Check if this is a forked Linux distro
 check_forked() {
 
