@@ -7,9 +7,8 @@ services:
       - MARIADB_PASSWORD=domjudge
       - MARIADB_DATABASE=domjudge
     ports:
-      - 3306:3306
-      - 2631:631
-    command: --max-connections=1000 --max-allowed-packet=512M
+      - 127.0.0.1:3306:3306
+    command: --max-connections=1000 --max-allowed-packet=512M --innodb_snapshot_isolation=OFF
     volumes:
       - sqldata:/var/lib/mysql
   domjudge:
