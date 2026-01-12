@@ -59,9 +59,11 @@ apt install -y apt-transport-https \
     open-vm-tools
 error "Install docker depedencies"
 
+
+
 # Git commit from https://github.com/docker/docker-install when
 # the script was uploaded (Should only be modified by upload job):
-SCRIPT_COMMIT_SHA="4c94a56999e10efcf48c5b8e3f6afea464f9108e"
+SCRIPT_COMMIT_SHA="f381ee68b32e515bb4dc034b339266aff1fbc460"
 
 # strip "v" prefix if present
 VERSION="${VERSION#v}"
@@ -82,10 +84,17 @@ fi
 DEFAULT_REPO_FILE="docker-ce.repo"
 if [ -z "$REPO_FILE" ]; then
 	REPO_FILE="$DEFAULT_REPO_FILE"
+	# Automatically default to a staging repo fora
+	# a staging download url (download-stage.docker.com)
+	case "$DOWNLOAD_URL" in
+		*-stage*) REPO_FILE="docker-ce-staging.repo";;
+	esac
 fi
 
 mirror=''
 DRY_RUN=${DRY_RUN:-}
+REPO_ONLY=${REPO_ONLY:-0}
+NO_AUTOSTART=${NO_AUTOSTART:-0}
 while [ $# -gt 0 ]; do
 	case "$1" in
 		--channel)
@@ -102,6 +111,13 @@ while [ $# -gt 0 ]; do
 		--version)
 			VERSION="${2#v}"
 			shift
+			;;
+		--setup-repo)
+			REPO_ONLY=1
+			shift
+			;;
+		--no-autostart)
+			NO_AUTOSTART=1
 			;;
 		--*)
 			echo "Illegal option $1"
@@ -243,6 +259,65 @@ get_distribution() {
 	echo "$lsb_dist"
 }
 
+start_docker_daemon() {
+	# Use systemctl if available (for systemd-based systems)
+	if command_exists systemctl; then
+		is_dry_run || >&2 echo "Using systemd to manage Docker service"
+		if (
+			is_dry_run || set -x
+			$sh_c systemctl enable --now docker.service 2>/dev/null
+		); then
+			is_dry_run || echo "INFO: Docker daemon enabled and started" >&2
+		else
+			is_dry_run || echo "WARNING: unable to enable the docker service" >&2
+		fi
+	else
+		# No service management available (container environment)
+		if ! is_dry_run; then
+			>&2 echo "Note: Running in a container environment without service management"
+			>&2 echo "Docker daemon cannot be started automatically in this environment"
+			>&2 echo "The Docker packages have been installed successfully"
+		fi
+	fi
+	>&2 echo
+}
+
+echo_docker_as_nonroot() {
+	if is_dry_run; then
+		return
+	fi
+	if command_exists docker && [ -e /var/run/docker.sock ]; then
+		(
+			set -x
+			$sh_c 'docker version'
+		) || true
+	fi
+
+	# intentionally mixed spaces and tabs here -- tabs are stripped by "<<-EOF", spaces are kept in the output
+	echo
+	echo "================================================================================"
+	echo
+	if version_gte "20.10"; then
+		echo "To run Docker as a non-privileged user, consider setting up the"
+		echo "Docker daemon in rootless mode for your user:"
+		echo
+		echo "    dockerd-rootless-setuptool.sh install"
+		echo
+		echo "Visit https://docs.docker.com/go/rootless/ to learn about rootless mode."
+		echo
+	fi
+	echo
+	echo "To run the Docker daemon as a fully privileged service, but granting non-root"
+	echo "users access, refer to https://docs.docker.com/go/daemon-access/"
+	echo
+	echo "WARNING: Access to the remote API on a privileged Docker daemon is equivalent"
+	echo "         to root access on the host. Refer to the 'Docker daemon attack surface'"
+	echo "         documentation for details: https://docs.docker.com/go/attack-surface/"
+	echo
+	echo "================================================================================"
+	echo
+}
+
 # Check if this is a forked Linux distro
 check_forked() {
 
@@ -280,6 +355,9 @@ check_forked() {
 				fi
 				dist_version="$(sed 's/\/.*//' /etc/debian_version | sed 's/\..*//')"
 				case "$dist_version" in
+					13|14|forky)
+						dist_version="trixie"
+					;;
 					12)
 						dist_version="bookworm"
 					;;
@@ -303,6 +381,24 @@ check_forked() {
 
 do_install() {
 	echo "# Executing docker install script, commit: $SCRIPT_COMMIT_SHA"
+
+	if command_exists docker; then
+		cat >&2 <<-'EOF'
+			Warning: the "docker" command appears to already exist on this system.
+
+			If you already have Docker installed, this script can cause trouble, which is
+			why we're displaying this warning and provide the opportunity to cancel the
+			installation.
+
+			If you installed the current Docker package using this script and are using it
+			again to update Docker, you can ignore this message, but be aware that the
+			script resets any custom changes in the deb and rpm repo configuration
+			files to match the parameters passed to the script.
+
+			You may press Ctrl+C now to abort this script.
+		EOF
+		( set -x; sleep 20 )
+	fi
 
 	user="$(id -un 2>/dev/null || true)"
 
@@ -355,6 +451,9 @@ do_install() {
 		debian|raspbian)
 			dist_version="$(sed 's/\/.*//' /etc/debian_version | sed 's/\..*//')"
 			case "$dist_version" in
+				13)
+					dist_version="trixie"
+				;;
 				12)
 					dist_version="bookworm"
 				;;
@@ -405,14 +504,14 @@ do_install() {
 		raspbian.buster|raspbian.stretch|raspbian.jessie)
 			deprecation_notice "$lsb_dist" "$dist_version"
 			;;
-		ubuntu.bionic|ubuntu.xenial|ubuntu.trusty)
+		ubuntu.focal|ubuntu.bionic|ubuntu.xenial|ubuntu.trusty)
 			deprecation_notice "$lsb_dist" "$dist_version"
 			;;
-		ubuntu.mantic|ubuntu.lunar|ubuntu.kinetic|ubuntu.impish|ubuntu.hirsute|ubuntu.groovy|ubuntu.eoan|ubuntu.disco|ubuntu.cosmic)
+		ubuntu.oracular|ubuntu.mantic|ubuntu.lunar|ubuntu.kinetic|ubuntu.impish|ubuntu.hirsute|ubuntu.groovy|ubuntu.eoan|ubuntu.disco|ubuntu.cosmic)
 			deprecation_notice "$lsb_dist" "$dist_version"
 			;;
 		fedora.*)
-			if [ "$dist_version" -lt 40 ]; then
+			if [ "$dist_version" -lt 41 ]; then
 				deprecation_notice "$lsb_dist" "$dist_version"
 			fi
 			;;
@@ -435,6 +534,11 @@ do_install() {
 				$sh_c "echo \"$apt_repo\" > /etc/apt/sources.list.d/docker.list"
 				$sh_c 'apt-get -qq update >/dev/null'
 			)
+
+			if [ "$REPO_ONLY" = "1" ]; then
+				exit 0
+			fi
+
 			pkg_version=""
 			if [ -n "$VERSION" ]; then
 				if is_dry_run; then
@@ -472,14 +576,25 @@ do_install() {
 				if version_gte "23.0"; then
 						pkgs="$pkgs docker-buildx-plugin"
 				fi
+				if version_gte "28.2"; then
+						pkgs="$pkgs docker-model-plugin"
+				fi
 				if ! is_dry_run; then
 					set -x
 				fi
 				$sh_c "DEBIAN_FRONTEND=noninteractive apt-get -y -qq install $pkgs >/dev/null"
 			)
-			return
+			if [ "$NO_AUTOSTART" != "1" ]; then
+				start_docker_daemon
+			fi
+			echo_docker_as_nonroot
+			exit 0
 			;;
 		centos|fedora|rhel)
+			if [ "$(uname -m)" = "s390x" ]; then
+				echo "Effective v27.5, please consult RHEL distro statement for s390x support."
+				exit 1
+			fi
 			repo_file_url="$DOWNLOAD_URL/linux/$lsb_dist/$REPO_FILE"
 			(
 				if ! is_dry_run; then
@@ -516,6 +631,11 @@ do_install() {
 					$sh_c "yum makecache"
 				fi
 			)
+
+			if [ "$REPO_ONLY" = "1" ]; then
+				exit 0
+			fi
+
 			pkg_version=""
 			if command_exists dnf; then
 				pkg_manager="dnf"
@@ -567,91 +687,22 @@ do_install() {
 					pkgs="$pkgs docker-compose-plugin docker-ce-rootless-extras$pkg_version"
 				fi
 				if version_gte "23.0"; then
-						pkgs="$pkgs docker-buildx-plugin"
+						pkgs="$pkgs docker-buildx-plugin docker-model-plugin"
 				fi
 				if ! is_dry_run; then
 					set -x
 				fi
 				$sh_c "$pkg_manager $pkg_manager_flags install $pkgs"
 			)
-			return
+			if [ "$NO_AUTOSTART" != "1" ]; then
+				start_docker_daemon
+			fi
+			echo_docker_as_nonroot
+			exit 0
 			;;
 		sles)
-			if [ "$(uname -m)" != "s390x" ]; then
-				echo "Packages for SLES are currently only available for s390x"
-				exit 1
-			fi
-			repo_file_url="$DOWNLOAD_URL/linux/$lsb_dist/$REPO_FILE"
-			pre_reqs="ca-certificates curl libseccomp2 awk"
-			(
-				if ! is_dry_run; then
-					set -x
-				fi
-				$sh_c "zypper install -y $pre_reqs"
-				$sh_c "rm -f /etc/zypp/repos.d/docker-ce-*.repo"
-				$sh_c "zypper addrepo $repo_file_url"
-
-				opensuse_factory_url="https://download.opensuse.org/repositories/security:/SELinux/openSUSE_Factory/"
-				if ! zypper lr -d | grep -q "${opensuse_factory_url}"; then
-					opensuse_repo="${opensuse_factory_url}security:SELinux.repo"
-					if ! is_dry_run; then
-						cat >&2 <<- EOF
-							WARNING!!
-							openSUSE repository ($opensuse_repo) will be enabled now.
-							Do you wish to continue?
-							You may press Ctrl+C now to abort this script.
-						EOF
-						( set -x; sleep 20 )
-					fi
-					$sh_c "zypper addrepo $opensuse_repo"
-				fi
-				$sh_c "zypper --gpg-auto-import-keys refresh"
-				$sh_c "zypper lr -d"
-			)
-			pkg_version=""
-			if [ -n "$VERSION" ]; then
-				if is_dry_run; then
-					echo "# WARNING: VERSION pinning is not supported in DRY_RUN"
-				else
-					pkg_pattern="$(echo "$VERSION" | sed 's/-ce-/\\\\.ce.*/g' | sed 's/-/.*/g')"
-					search_command="zypper search -s --match-exact 'docker-ce' | grep '$pkg_pattern' | tail -1 | awk '{print \$6}'"
-					pkg_version="$($sh_c "$search_command")"
-					echo "INFO: Searching repository for VERSION '$VERSION'"
-					echo "INFO: $search_command"
-					if [ -z "$pkg_version" ]; then
-						echo
-						echo "ERROR: '$VERSION' not found amongst zypper list results"
-						echo
-						exit 1
-					fi
-					search_command="zypper search -s --match-exact 'docker-ce-cli' | grep '$pkg_pattern' | tail -1 | awk '{print \$6}'"
-					# It's okay for cli_pkg_version to be blank, since older versions don't support a cli package
-					cli_pkg_version="$($sh_c "$search_command")"
-					pkg_version="-$pkg_version"
-				fi
-			fi
-			(
-				pkgs="docker-ce$pkg_version"
-				if version_gte "18.09"; then
-					if [ -n "$cli_pkg_version" ]; then
-						# older versions didn't ship the cli and containerd as separate packages
-						pkgs="$pkgs docker-ce-cli-$cli_pkg_version containerd.io"
-					else
-						pkgs="$pkgs docker-ce-cli containerd.io"
-					fi
-				fi
-				if version_gte "20.10"; then
-					pkgs="$pkgs docker-compose-plugin docker-ce-rootless-extras$pkg_version"
-				fi
-				if version_gte "23.0"; then
-						pkgs="$pkgs docker-buildx-plugin"
-				fi
-				if ! is_dry_run; then
-					set -x
-				fi
-				$sh_c "zypper -q install -y $pkgs"
-			)
-			return
+			echo "Effective v27.5, please consult SLES distro statement for s390x support."
+			exit 1
 			;;
 		*)
 			if [ -z "$lsb_dist" ]; then
@@ -695,7 +746,7 @@ fi
 # Check that everything is working
 echo "--> Checking that docker is ready to use..."
 docker run hello-world
-error "Running example container"
+error "Running example container. Review the troubleshooting steps at https://docs.docker.com/engine/daemon/troubleshoot/"
 
 echo "[OK] Docker installation finished"
 
