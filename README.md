@@ -5,8 +5,8 @@ This repo contains different utilities to simplify the deployment and administra
 ## Recommended OS
 
 We have installed and deployed Domjudge instances using the following Ubuntu versions:
-- Ubuntu Server 18.04 LTS
-- Ubuntu Server 20.04 LTS
+- Ubuntu Server 18.04 LTS (Unsupported as of 2025-02-05)
+- Ubuntu Server 20.04 LTS (Unsupported as of 2025-02-05)
 - Ubuntu Server 22.04 LTS
 - Ubuntu Server 24.04 LTS
 
