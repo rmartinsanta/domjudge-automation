@@ -8,6 +8,8 @@ if (( $# != 1 )); then
 fi
 
 if [ $1 = "--yes-i-really-want-to-destroy-all-data" ]; then
+  echo "If you want to reinstall DOMJudge after reset, please run ./install.sh after reset.  I will wait 10 seconds to make sure you are reading this!"
+  sleep 10
   ./stop.sh
   sudo rm -rf domjudge
   docker volume rm domjudge_sqldata
