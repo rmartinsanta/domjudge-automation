@@ -8,6 +8,9 @@ if (( $# != 1 )); then
     exit -1
 fi
 
+if [ ! -d "domjudge" ]; then
+  echo "domjudge directory does not exist. Please, execute ./install.sh before starting DOMJudge."
+fi
 cd domjudge
 docker compose pull
 docker compose up --scale jh=$1 -d
