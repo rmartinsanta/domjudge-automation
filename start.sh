@@ -10,6 +10,7 @@ fi
 
 if [ ! -d "domjudge" ]; then
   echo "domjudge directory does not exist. Please, execute ./install.sh before starting DOMJudge."
+  exit -1
 fi
 cd domjudge
 docker compose pull
