@@ -42,8 +42,7 @@ packages:
   - git
   - unattended-upgrades
 runcmd:
-  - ["systemctl", "start", "fail2ban", "unattended-upgrades"]
-  - ["systemctl", " enable", "fail2ban", "unattended-upgrades"] 
+  - ["systemctl", "enable", "--now", "fail2ban", "unattended-upgrades"]
   - ["git", "clone", "https://github.com/rmartinsanta/domjudge-automation", "/home/domjudge/domjudge-automation"]
   - ["chown", "-R", "domjudge:domjudge", "/home/domjudge/domjudge-automation"]
 ```
